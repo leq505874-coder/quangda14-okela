@@ -1,503 +1,1300 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#f7c6c7">
-<meta name="color-scheme" content="light only">
-<title>Quangda14 Okela</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  :root{
-    --pink-soft:#f7c6c7; --pink-warm:#e8a0a8; --pink-deep:#c96b7a;
-    --cream:#fdf6f0; --cream-2:#fbeae0; --pastel-pink:#fce4e4;
-    --text-dark:#5a3a3f; --text-mid:#8a6a70;
-    --shadow:0 6px 20px rgba(201,107,122,.12);
-    --shadow-lg:0 12px 32px rgba(201,107,122,.18);
-    --radius:18px; --radius-sm:12px;
-  }
-  html,body{height:100%;}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
-    background:linear-gradient(160deg,var(--cream) 0%,var(--cream-2) 50%,var(--pastel-pink) 100%);
-    background-attachment:fixed; color:var(--text-dark); line-height:1.5;
-    min-height:100vh; padding-bottom:40px; -webkit-font-smoothing:antialiased;
-  }
-  header{
-    background:linear-gradient(135deg,var(--pink-soft) 0%,var(--pink-warm) 100%);
-    padding:22px 20px 20px; border-bottom-left-radius:26px; border-bottom-right-radius:26px;
-    box-shadow:var(--shadow); position:sticky; top:0; z-index:50;
-  }
-  .header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
-  .brand-logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 8px rgba(201,107,122,.15);}
-  .brand-logo svg{width:22px;height:22px;}
-  .brand h1{font-size:1.15rem;font-weight:700;color:#fff;letter-spacing:.2px;text-shadow:0 1px 2px rgba(150,70,80,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .brand p{font-size:.72rem;color:rgba(255,255,255,.9);font-weight:500;}
-  .header-count{background:rgba(255,255,255,.55);color:var(--pink-deep);font-size:.75rem;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap;flex-shrink:0;}
-  main{max-width:720px;margin:0 auto;padding:18px 16px 40px;}
-  .search-wrap{position:relative;margin-bottom:16px;}
-  .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--text-mid);opacity:.7;pointer-events:none;}
-  #searchInput{width:100%;padding:14px 16px 14px 42px;border:1.5px solid rgba(201,107,122,.18);border-radius:var(--radius);background:#fff;font-size:.95rem;color:var(--text-dark);outline:none;transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow);font-family:inherit;}
-  #searchInput::placeholder{color:#b8a0a5;}
-  #searchInput:focus{border-color:var(--pink-warm);box-shadow:0 0 0 4px rgba(247,198,199,.35),var(--shadow);}
-  .btn-new{width:100%;padding:15px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--pink-warm) 0%,var(--pink-deep) 100%);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .15s,box-shadow .15s;margin-bottom:22px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;letter-spacing:.3px;}
-  .btn-new:active{transform:scale(.98);box-shadow:0 6px 16px rgba(201,107,122,.25);}
-  #notesList{display:grid;grid-template-columns:1fr;gap:14px;}
-  .note-card{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid rgba(247,198,199,.35);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;animation:fadeIn .25s ease;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-  .note-card:active{transform:scale(.995);}
-  .note-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--pink-soft),var(--pink-warm));}
-  .note-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
-  .note-title{font-size:1.05rem;font-weight:700;color:var(--text-dark);word-break:break-word;flex:1;line-height:1.35;}
-  .note-title.empty{color:#b8a0a5;font-style:italic;font-weight:500;}
-  .note-content{font-size:.9rem;color:var(--text-mid);word-break:break-word;white-space:pre-wrap;margin-bottom:10px;line-height:1.55;max-height:140px;overflow:hidden;position:relative;}
-  .note-content.faded::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(transparent,#fff);}
-  .note-img{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;display:block;max-height:240px;object-fit:cover;border:1px solid rgba(247,198,199,.4);background:var(--pastel-pink);}
-  .note-date{font-size:.72rem;color:#b89aa0;font-weight:500;display:flex;align-items:center;gap:5px;margin-bottom:10px;}
-  .note-date svg{width:12px;height:12px;stroke:#b89aa0;}
-  .note-actions{display:flex;gap:8px;padding-top:10px;border-top:1px dashed rgba(247,198,199,.6);}
-  .note-actions button{flex:1;padding:9px;border:none;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;}
-  .note-actions button:active{transform:scale(.97);}
-  .note-actions button svg{width:14px;height:14px;}
-  .btn-edit{background:var(--pastel-pink);color:var(--pink-deep);}
-  .btn-edit:active{background:#f9d5d6;}
-  .btn-delete{background:#fdeceb;color:#c9555f;}
-  .btn-delete:active{background:#f9dad8;}
-  .empty-state{text-align:center;padding:48px 20px;color:var(--text-mid);}
-  .empty-state svg{width:72px;height:72px;margin-bottom:14px;opacity:.5;stroke:var(--pink-warm);}
-  .empty-state h3{font-size:1.05rem;color:var(--text-dark);margin-bottom:6px;font-weight:700;}
-  .empty-state p{font-size:.85rem;color:var(--text-mid);}
-  .modal-overlay{position:fixed;inset:0;background:rgba(90,58,63,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:0;}
-  .modal-overlay.active{display:flex;animation:overlayIn .2s ease;}
-  @keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
-  .modal{background:var(--cream);width:100%;max-width:560px;max-height:92vh;border-top-left-radius:26px;border-top-right-radius:26px;padding:20px 18px 24px;overflow-y:auto;animation:modalIn .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -8px 40px rgba(90,58,63,.2);}
-  @keyframes modalIn{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-  .modal-handle{width:42px;height:5px;background:rgba(201,107,122,.25);border-radius:999px;margin:0 auto 16px;}
-  .modal h2{font-size:1.15rem;color:var(--text-dark);margin-bottom:18px;font-weight:700;text-align:center;}
-  .field{margin-bottom:16px;}
-  .field label{display:block;font-size:.8rem;font-weight:700;color:var(--text-mid);margin-bottom:7px;letter-spacing:.2px;}
-  .field input[type="text"],.field textarea{width:100%;padding:13px 14px;border:1.5px solid rgba(201,107,122,.2);border-radius:var(--radius-sm);background:#fff;font-size:.95rem;color:var(--text-dark);outline:none;font-family:inherit;transition:border-color .2s,box-shadow .2s;resize:vertical;}
-  .field input[type="text"]::placeholder,.field textarea::placeholder{color:#c4aeb3;}
-  .field input[type="text"]:focus,.field textarea:focus{border-color:var(--pink-warm);box-shadow:0 0 0 4px rgba(247,198,199,.3);}
-  .field textarea{min-height:110px;line-height:1.5;}
-  .img-picker{display:flex;gap:10px;}
-  .img-picker input[type="file"]{display:none;}
-  .img-btn{flex:1;padding:12px;border:1.5px dashed rgba(201,107,122,.4);border-radius:var(--radius-sm);background:var(--pastel-pink);color:var(--pink-deep);font-size:.88rem;font-weight:600;cursor:pointer;text-align:center;transition:background .15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
-  .img-btn:active{background:#f9d5d6;}
-  .img-btn svg{width:16px;height:16px;}
-  .img-clear{padding:12px 16px;border:1.5px solid rgba(201,107,122,.3);border-radius:var(--radius-sm);background:#fff;color:#c9555f;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
-  .img-clear:active{background:#fdeceb;}
-  .img-preview-wrap{margin-top:12px;position:relative;display:none;}
-  .img-preview-wrap.active{display:block;}
-  .img-preview{width:100%;border-radius:var(--radius-sm);max-height:260px;object-fit:cover;border:1px solid rgba(247,198,199,.5);background:var(--pastel-pink);}
-  .img-preview-label{font-size:.72rem;color:var(--text-mid);margin-top:6px;text-align:center;font-weight:500;}
-  .modal-actions{display:flex;gap:10px;margin-top:8px;position:sticky;bottom:0;background:var(--cream);padding-top:8px;}
-  .modal-actions button{flex:1;padding:14px;border:none;border-radius:var(--radius-sm);font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s,box-shadow .12s;}
-  .modal-actions button:active{transform:scale(.98);}
-  .btn-cancel{background:#f0e4e6;color:var(--text-mid);}
-  .btn-save{background:linear-gradient(135deg,var(--pink-warm) 0%,var(--pink-deep) 100%);color:#fff;box-shadow:0 6px 16px rgba(201,107,122,.28);}
-  .confirm-box{background:var(--cream);border-radius:22px;padding:24px 20px 20px;width:calc(100% - 40px);max-width:380px;margin:auto;text-align:center;animation:popIn .25s cubic-bezier(.22,1,.36,1);box-shadow:0 20px 50px rgba(90,58,63,.3);}
-  @keyframes popIn{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
-  .confirm-icon{width:56px;height:56px;border-radius:50%;background:#fdeceb;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-  .confirm-icon svg{width:26px;height:26px;stroke:#c9555f;}
-  .confirm-box h3{font-size:1.1rem;color:var(--text-dark);margin-bottom:8px;font-weight:700;}
-  .confirm-box p{font-size:.88rem;color:var(--text-mid);margin-bottom:20px;line-height:1.5;}
-  .confirm-actions{display:flex;gap:10px;}
-  .confirm-actions button{flex:1;padding:13px;border:none;border-radius:var(--radius-sm);font-size:.92rem;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s;}
-  .confirm-actions button:active{transform:scale(.97);}
-  .btn-no{background:#f0e4e6;color:var(--text-mid);}
-  .btn-yes{background:linear-gradient(135deg,#e08a92,#c9555f);color:#fff;box-shadow:0 5px 14px rgba(201,85,95,.3);}
-  #confirmOverlay{align-items:center;padding:20px;}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text-dark);color:#fff;padding:12px 22px;border-radius:999px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .3s;box-shadow:0 8px 24px rgba(90,58,63,.35);pointer-events:none;max-width:90vw;text-align:center;}
-  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-  .modal::-webkit-scrollbar{width:6px;}
-  .modal::-webkit-scrollbar-thumb{background:rgba(201,107,122,.3);border-radius:999px;}
-  @media(min-width:600px){
-    #notesList{grid-template-columns:repeat(2,1fr);}
-    .modal-overlay{align-items:center;padding:20px;}
-    .modal{border-radius:26px;padding:24px 24px 26px;}
-    .modal-handle{display:none;}
-    header{padding:24px 24px 22px;}
-    .brand h1{font-size:1.35rem;}
-  }
-  @media(min-width:900px){#notesList{grid-template-columns:repeat(3,1fr);}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7c6d0">
+  <title>Quangda14 Okela</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --pink-1: #fff0f3;
+      --pink-2: #ffdfe6;
+      --pink-3: #f7c6d0;
+      --pink-4: #ed9dad;
+      --pink-5: #d96f86;
+      --pink-6: #bd536c;
+
+      --cream: #fffaf7;
+      --text: #573d44;
+      --text-light: #8b6d75;
+      --white: #ffffff;
+      --border: #f2d6dc;
+
+      --shadow: 0 10px 30px rgba(190, 90, 115, 0.12);
+    }
+
+    body {
+      font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      min-height: 100vh;
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at top left,
+          #ffe8ee 0,
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          var(--cream),
+          var(--pink-1)
+        );
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* ================= HEADER ================= */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+
+      background: rgba(255, 250, 247, 0.88);
+
+      border-bottom:
+        1px solid rgba(242, 214, 220, 0.8);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .header-inner {
+      max-width: 1150px;
+      margin: auto;
+      padding: 18px 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+
+      border-radius: 15px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink-3),
+          var(--pink-4)
+        );
+
+      color: white;
+      font-size: 23px;
+
+      box-shadow:
+        0 8px 20px rgba(217, 111, 134, 0.2);
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 3px;
+    }
+
+    .note-count {
+      white-space: nowrap;
+
+      padding: 9px 13px;
+
+      border-radius: 999px;
+
+      background: var(--pink-2);
+      color: var(--pink-6);
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* ================= MAIN ================= */
+
+    main {
+      max-width: 1150px;
+      margin: auto;
+
+      padding: 28px 20px 60px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+
+      margin-bottom: 25px;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box span {
+      position: absolute;
+
+      left: 15px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      opacity: 0.6;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 48px;
+
+      padding:
+        0 15px 0 43px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 16px;
+
+      outline: none;
+
+      background:
+        rgba(255, 255, 255, 0.8);
+
+      color: var(--text);
+    }
+
+    .search-box input:focus {
+      border-color: var(--pink-4);
+
+      box-shadow:
+        0 0 0 4px
+        rgba(237, 157, 173, 0.12);
+    }
+
+    .primary-btn {
+      border: none;
+      border-radius: 16px;
+
+      padding: 0 20px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink-5),
+          var(--pink-4)
+        );
+
+      color: white;
+      font-weight: 800;
+
+      box-shadow:
+        0 8px 20px
+        rgba(217, 111, 134, 0.2);
+
+      transition: 0.2s;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ================= EMPTY ================= */
+
+    .empty {
+      text-align: center;
+
+      padding: 70px 20px;
+
+      border:
+        1px dashed var(--border);
+
+      border-radius: 25px;
+
+      background:
+        rgba(255, 255, 255, 0.55);
+    }
+
+    .empty-icon {
+      font-size: 45px;
+      margin-bottom: 12px;
+    }
+
+    .empty h2 {
+      font-size: 21px;
+      margin-bottom: 7px;
+    }
+
+    .empty p {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* ================= NOTES ================= */
+
+    .notes-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fill,
+          minmax(260px, 1fr)
+        );
+
+      gap: 18px;
+    }
+
+    .note-card {
+      overflow: hidden;
+
+      background:
+        rgba(255, 255, 255, 0.84);
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 22px;
+
+      box-shadow: var(--shadow);
+
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    }
+
+    .note-card:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 15px 35px
+        rgba(190, 90, 115, 0.17);
+    }
+
+    .note-image {
+      width: 100%;
+      height: 190px;
+
+      display: block;
+
+      object-fit: cover;
+
+      background: var(--pink-1);
+    }
+
+    .note-image-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 2px;
+
+      background: var(--pink-2);
+    }
+
+    .note-image-grid img {
+      width: 100%;
+      height: 140px;
+
+      display: block;
+
+      object-fit: cover;
+    }
+
+    .note-image-grid.single {
+      display: block;
+    }
+
+    .note-image-grid.single img {
+      height: 190px;
+    }
+
+    .note-body {
+      padding: 17px;
+    }
+
+    .note-title {
+      font-size: 18px;
+      font-weight: 800;
+
+      margin-bottom: 8px;
+
+      word-break: break-word;
+    }
+
+    .note-content {
+      color: var(--text-light);
+
+      font-size: 14px;
+      line-height: 1.55;
+
+      white-space: pre-wrap;
+
+      display: -webkit-box;
+
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+
+      overflow: hidden;
+    }
+
+    .note-meta {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 10px;
+
+      margin-top: 15px;
+    }
+
+    .note-date {
+      color: var(--text-light);
+      font-size: 11px;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+
+      display: grid;
+      place-items: center;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 11px;
+
+      background: white;
+      color: var(--text);
+    }
+
+    .icon-btn:hover {
+      background: var(--pink-1);
+    }
+
+    .delete-btn:hover {
+      color: #c94e65;
+    }
+
+    /* ================= MODAL ================= */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+
+      z-index: 100;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      padding: 18px;
+
+      background:
+        rgba(65, 35, 42, 0.35);
+
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: min(650px, 100%);
+      max-height: 92vh;
+
+      overflow-y: auto;
+
+      padding: 23px;
+
+      background: var(--cream);
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 25px;
+
+      box-shadow:
+        0 25px 80px
+        rgba(80, 40, 50, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 21px;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+
+      border: none;
+      border-radius: 12px;
+
+      background: var(--pink-2);
+      color: var(--pink-6);
+
+      font-size: 20px;
+    }
+
+    /* ================= FORM ================= */
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    .field label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input[type="text"],
+    .field textarea {
+      width: 100%;
+
+      padding: 13px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 15px;
+
+      outline: none;
+
+      background: white;
+      color: var(--text);
+    }
+
+    .field input[type="text"]:focus,
+    .field textarea:focus {
+      border-color: var(--pink-4);
+
+      box-shadow:
+        0 0 0 4px
+        rgba(237, 157, 173, 0.1);
+    }
+
+    .field textarea {
+      min-height: 180px;
+
+      resize: vertical;
+
+      line-height: 1.6;
+    }
+
+    /* ================= IMAGE UPLOAD ================= */
+
+    .image-upload {
+      padding: 16px;
+
+      border:
+        1px dashed var(--pink-4);
+
+      border-radius: 18px;
+
+      background: var(--pink-1);
+    }
+
+    .add-image-btn {
+      width: 100%;
+      min-height: 50px;
+
+      border:
+        1px solid var(--pink-4);
+
+      border-radius: 15px;
+
+      background: white;
+
+      color: var(--pink-6);
+
+      font-weight: 800;
+      font-size: 14px;
+
+      transition: 0.2s;
+    }
+
+    .add-image-btn:hover {
+      background: #fff7f9;
+
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 7px 18px
+        rgba(217, 111, 134, 0.1);
+    }
+
+    .add-image-btn:active {
+      transform: scale(0.98);
+    }
+
+    .image-help {
+      margin-top: 9px;
+
+      color: var(--text-light);
+
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .image-preview {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fill,
+          minmax(120px, 1fr)
+        );
+
+      gap: 10px;
+
+      margin-top: 13px;
+    }
+
+    .preview-item {
+      position: relative;
+
+      overflow: hidden;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 15px;
+
+      background: white;
+    }
+
+    .preview-item img {
+      display: block;
+
+      width: 100%;
+      height: 115px;
+
+      object-fit: cover;
+    }
+
+    .preview-info {
+      padding: 7px;
+
+      font-size: 10px;
+
+      color: var(--text-light);
+    }
+
+    .preview-name {
+      overflow: hidden;
+
+      white-space: nowrap;
+
+      text-overflow: ellipsis;
+    }
+
+    .preview-type {
+      margin-top: 2px;
+
+      font-weight: 700;
+    }
+
+    .remove-image {
+      position: absolute;
+
+      right: 6px;
+      top: 6px;
+
+      width: 28px;
+      height: 28px;
+
+      border: none;
+      border-radius: 50%;
+
+      background:
+        rgba(255, 255, 255, 0.94);
+
+      color: var(--pink-6);
+
+      font-weight: 900;
+    }
+
+    /* ================= FOOTER ================= */
+
+    .modal-footer {
+      display: flex;
+
+      justify-content: flex-end;
+
+      gap: 10px;
+
+      margin-top: 20px;
+    }
+
+    .secondary-btn {
+      padding: 11px 17px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 14px;
+
+      background: white;
+
+      color: var(--text);
+
+      font-weight: 700;
+    }
+
+    .danger-btn {
+      padding: 11px 17px;
+
+      border: none;
+      border-radius: 14px;
+
+      background: #d96f86;
+
+      color: white;
+
+      font-weight: 800;
+    }
+
+    /* ================= CONFIRM ================= */
+
+    .confirm-box {
+      width: min(420px, 100%);
+    }
+
+    .confirm-text {
+      color: var(--text-light);
+
+      line-height: 1.55;
+
+      font-size: 14px;
+    }
+
+    /* ================= TOAST ================= */
+
+    .toast {
+      position: fixed;
+
+      left: 50%;
+      bottom: 25px;
+
+      z-index: 300;
+
+      padding: 11px 16px;
+
+      border-radius: 13px;
+
+      background: #573d44;
+      color: white;
+
+      font-size: 13px;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transform:
+        translate(-50%, 20px);
+
+      transition: 0.25s;
+    }
+
+    .toast.show {
+      opacity: 1;
+
+      transform:
+        translate(-50%, 0);
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 600px) {
+
+      .header-inner {
+        padding: 14px;
+      }
+
+      main {
+        padding:
+          20px 14px 45px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+      }
+
+      .primary-btn {
+        height: 48px;
+      }
+
+      .notes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-box {
+        padding: 18px;
+
+        border-radius: 21px;
+      }
+
+      .brand h1 {
+        font-size: 17px;
+      }
+
+      .brand-icon {
+        width: 41px;
+        height: 41px;
+      }
+
+      .image-preview {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#c96b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="8" y1="13" x2="16" y2="13"/>
-          <line x1="8" y1="17" x2="13" y2="17"/>
-        </svg>
+  <!-- ================= HEADER ================= -->
+
+  <header>
+
+    <div class="header-inner">
+
+      <div class="brand">
+
+        <div class="brand-icon">
+          ✿
+        </div>
+
+        <div>
+          <h1>
+            Quangda14 Okela
+          </h1>
+
+          <p>
+            Ghi chú cá nhân
+          </p>
+        </div>
+
       </div>
-      <div>
-        <h1>Quangda14 Okela</h1>
-        <p>Ghi chú cá nhân</p>
+
+      <div
+        class="note-count"
+        id="noteCount"
+      >
+        0 ghi chú
       </div>
-    </div>
-    <div class="header-count" id="headerCount">0</div>
-  </div>
-</header>
 
-<main>
-  <div class="search-wrap">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" id="searchInput" placeholder="Tìm kiếm ghi chú..." autocomplete="off">
-  </div>
-
-  <button class="btn-new" id="btnNew">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    Ghi chú mới
-  </button>
-
-  <div id="notesList"></div>
-</main>
-
-<div class="modal-overlay" id="editorOverlay">
-  <div class="modal" id="editorModal">
-    <div class="modal-handle"></div>
-    <h2 id="editorTitle">Ghi chú mới</h2>
-
-    <div class="field">
-      <label for="noteTitle">Tiêu đề</label>
-      <input type="text" id="noteTitle" placeholder="Nhập tiêu đề ghi chú..." maxlength="120">
     </div>
 
-    <div class="field">
-      <label for="noteContent">Nội dung</label>
-      <textarea id="noteContent" placeholder="Nhập nội dung ghi chú..." maxlength="8000"></textarea>
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main>
+
+    <div class="toolbar">
+
+      <div class="search-box">
+
+        <span>🔎</span>
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Tìm kiếm ghi chú..."
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        id="newNoteBtn"
+        type="button"
+      >
+        ＋ Ghi chú mới
+      </button>
+
     </div>
 
-    <div class="field">
-      <label>Hình ảnh</label>
-      <div class="img-picker">
-        <label class="img-btn" for="imgInput">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          Chọn ảnh
+
+    <section id="notesList"></section>
+
+  </main>
+
+
+  <!-- ================= EDITOR ================= -->
+
+  <div
+    class="modal"
+    id="editorModal"
+    aria-hidden="true"
+  >
+
+    <div class="modal-box">
+
+      <div class="modal-header">
+
+        <h2 id="editorTitle">
+          Ghi chú mới
+        </h2>
+
+        <button
+          class="close-btn"
+          id="closeEditorBtn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- TITLE -->
+
+      <div class="field">
+
+        <label for="titleInput">
+          Tiêu đề
         </label>
-        <button type="button" class="img-clear" id="imgClear">Xóa ảnh</button>
+
+        <input
+          id="titleInput"
+          type="text"
+          maxlength="150"
+          placeholder="Nhập tiêu đề..."
+        >
+
       </div>
-      <input type="file" id="imgInput" accept="image/*">
-      <div class="img-preview-wrap" id="imgPreviewWrap">
-        <img class="img-preview" id="imgPreview" alt="Xem trước ảnh">
-        <div class="img-preview-label" id="imgLabel">Xem trước ảnh</div>
+
+
+      <!-- CONTENT -->
+
+      <div class="field">
+
+        <label for="contentInput">
+          Nội dung
+        </label>
+
+        <textarea
+          id="contentInput"
+          placeholder="Viết gì đó..."
+        ></textarea>
+
       </div>
+
+
+      <!-- IMAGE -->
+
+      <div class="field">
+
+        <label>
+          Hình ảnh
+        </label>
+
+        <div class="image-upload">
+
+          <!-- NÚT THÊM ẢNH -->
+
+          <button
+            type="button"
+            class="add-image-btn"
+            id="addImageBtn"
+          >
+            📷 ＋ Thêm ảnh
+          </button>
+
+
+          <!-- INPUT FILE ẨN -->
+
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            hidden
+          >
+
+
+          <div class="image-help">
+            Hỗ trợ JPG / JPEG, PNG và WebP.
+            Có thể chọn nhiều ảnh.
+            Tối đa 10MB mỗi ảnh.
+          </div>
+
+
+          <!-- PREVIEW -->
+
+          <div
+            class="image-preview"
+            id="imagePreview"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div class="modal-footer">
+
+        <button
+          class="secondary-btn"
+          id="cancelEditorBtn"
+          type="button"
+        >
+          Hủy
+        </button>
+
+
+        <button
+          class="primary-btn"
+          id="saveNoteBtn"
+          type="button"
+        >
+          Lưu ghi chú
+        </button>
+
+      </div>
+
     </div>
 
-    <div class="modal-actions">
-      <button class="btn-cancel" id="btnCancel">Hủy</button>
-      <button class="btn-save" id="btnSave">Lưu ghi chú</button>
-    </div>
   </div>
-</div>
 
-<div class="modal-overlay" id="confirmOverlay">
-  <div class="confirm-box">
-    <div class="confirm-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="3 6 5 6 21 6"/>
-        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-        <path d="M10 11v6M14 11v6"/>
-        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-      </svg>
+
+  <!-- ================= DELETE ================= -->
+
+  <div
+    class="modal"
+    id="confirmModal"
+    aria-hidden="true"
+  >
+
+    <div class="modal-box confirm-box">
+
+      <div class="modal-header">
+
+        <h2>
+          Xóa ghi chú?
+        </h2>
+
+        <button
+          class="close-btn"
+          id="closeConfirmBtn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <p class="confirm-text">
+        Ghi chú này sẽ bị xóa khỏi
+        trình duyệt. Hành động này
+        không thể hoàn tác.
+      </p>
+
+
+      <div class="modal-footer">
+
+        <button
+          class="secondary-btn"
+          id="cancelDeleteBtn"
+          type="button"
+        >
+          Hủy
+        </button>
+
+
+        <button
+          class="danger-btn"
+          id="confirmDeleteBtn"
+          type="button"
+        >
+          Xóa ghi chú
+        </button>
+
+      </div>
+
     </div>
-    <h3>Xóa ghi chú?</h3>
-    <p>Hành động này không thể hoàn tác. Ghi chú sẽ bị xóa vĩnh viễn khỏi thiết bị.</p>
-    <div class="confirm-actions">
-      <button class="btn-no" id="btnNo">Không</button>
-      <button class="btn-yes" id="btnYes">Xóa</button>
-    </div>
+
   </div>
-</div>
 
-<div class="toast" id="toast"></div>
 
-<script>
-(function () {
-  'use strict';
-  var STORAGE_KEY = 'quangda14okela_notes_v1';
-  var notes = [];
-  var editingId = null;
-  var deleteTargetId = null;
-  var currentImageData = null;
+  <!-- ================= TOAST ================= -->
 
-  var els = {
-    notesList: document.getElementById('notesList'),
-    headerCount: document.getElementById('headerCount'),
-    searchInput: document.getElementById('searchInput'),
-    btnNew: document.getElementById('btnNew'),
-    editorOverlay: document.getElementById('editorOverlay'),
-    editorTitle: document.getElementById('editorTitle'),
-    noteTitle: document.getElementById('noteTitle'),
-    noteContent: document.getElementById('noteContent'),
-    imgInput: document.getElementById('imgInput'),
-    imgClear: document.getElementById('imgClear'),
-    imgPreviewWrap: document.getElementById('imgPreviewWrap'),
-    imgPreview: document.getElementById('imgPreview'),
-    imgLabel: document.getElementById('imgLabel'),
-    btnCancel: document.getElementById('btnCancel'),
-    btnSave: document.getElementById('btnSave'),
-    confirmOverlay: document.getElementById('confirmOverlay'),
-    btnNo: document.getElementById('btnNo'),
-    btnYes: document.getElementById('btnYes'),
-    toast: document.getElementById('toast')
-  };
+  <div
+    class="toast"
+    id="toast"
+  ></div>
 
-  function loadNotes() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      var parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed.filter(function (n) {
-        return n && typeof n === 'object' && typeof n.id === 'string';
-      });
-    } catch (e) { return []; }
-  }
 
-  function saveNotes() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-      return true;
-    } catch (e) {
-      showToast('Bộ nhớ đầy, không thể lưu. Hãy xóa bớt ảnh.');
-      return false;
-    }
-  }
+  <script>
 
-  function uid() {
-    return 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
-  }
+    /* =====================================================
+       QUANGDA14 OKELA
+       NOTE SYSTEM
+       ===================================================== */
 
-  function escapeHtml(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
+    const STORAGE_KEY =
+      "quangda14okela_notes_v3";
 
-  function formatDate(ts) {
-    var d = new Date(ts);
-    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
-    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() +
-           ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-  }
 
-  var toastTimer = null;
-  function showToast(msg) {
-    els.toast.textContent = msg;
-    els.toast.classList.add('show');
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      els.toast.classList.remove('show');
-    }, 2200);
-  }
+    let notes = [];
 
-  function getFilteredNotes() {
-    var q = els.searchInput.value.trim().toLowerCase();
-    var sorted = notes.slice().sort(function (a, b) {
-      return (b.updatedAt || 0) - (a.updatedAt || 0);
-    });
-    if (!q) return sorted;
-    return sorted.filter(function (n) {
-      return (n.title || '').toLowerCase().indexOf(q) !== -1 ||
-             (n.content || '').toLowerCase().indexOf(q) !== -1;
-    });
-  }
+    let editingId = null;
 
-  function render() {
-    var list = getFilteredNotes();
-    var total = notes.length;
-    els.headerCount.textContent = total + ' ghi chú';
+    let deleteTargetId = null;
 
-    if (total === 0) {
-      els.notesList.innerHTML =
-        '<div class="empty-state" style="grid-column:1/-1;">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-            '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
-            '<polyline points="14 2 14 8 20 8"/>' +
-            '<line x1="9" y1="13" x2="15" y2="13"/>' +
-            '<line x1="9" y1="17" x2="13" y2="17"/>' +
-          '</svg>' +
-          '<h3>Chưa có ghi chú nào</h3>' +
-          '<p>Nhấn “+ Ghi chú mới” để bắt đầu viết ghi chú đầu tiên.</p>' +
-        '</div>';
-      return;
+    let currentImages = [];
+
+
+    /* ================= ELEMENTS ================= */
+
+    const notesList =
+      document.getElementById(
+        "notesList"
+      );
+
+    const noteCount =
+      document.getElementById(
+        "noteCount"
+      );
+
+    const searchInput =
+      document.getElementById(
+        "searchInput"
+      );
+
+    const editorModal =
+      document.getElementById(
+        "editorModal"
+      );
+
+    const confirmModal =
+      document.getElementById(
+        "confirmModal"
+      );
+
+    const titleInput =
+      document.getElementById(
+        "titleInput"
+      );
+
+    const contentInput =
+      document.getElementById(
+        "contentInput"
+      );
+
+    const imageInput =
+      document.getElementById(
+        "imageInput"
+      );
+
+    const imagePreview =
+      document.getElementById(
+        "imagePreview"
+      );
+
+    const editorTitle =
+      document.getElementById(
+        "editorTitle"
+      );
+
+    const toast =
+      document.getElementById(
+        "toast"
+      );
+
+
+    /* ================= UTILITIES ================= */
+
+    function uid() {
+
+      return (
+        Date.now().toString(36) +
+        Math.random()
+          .toString(36)
+          .slice(2, 9)
+      );
     }
 
-    if (list.length === 0) {
-      els.notesList.innerHTML =
-        '<div class="empty-state" style="grid-column:1/-1;">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-            '<circle cx="11" cy="11" r="8"/>' +
-            '<line x1="21" y1="21" x2="16.65" y2="16.65"/>' +
-          '</svg>' +
-          '<h3>Không tìm thấy ghi chú</h3>' +
-          '<p>Thử từ khóa khác xem sao.</p>' +
-        '</div>';
-      return;
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    var html = '';
-    for (var i = 0; i < list.length; i++) {
-      var n = list[i];
-      var title = n.title ? escapeHtml(n.title) : '';
-      var content = n.content ? escapeHtml(n.content) : '';
-      var longContent = content.length > 180;
 
-      html += '<article class="note-card" data-id="' + escapeHtml(n.id) + '">';
-      html += '<div class="note-head">';
-      html += title ? '<h3 class="note-title">' + title + '</h3>'
-                    : '<h3 class="note-title empty">(Không có tiêu đề)</h3>';
-      html += '</div>';
-      if (n.image) html += '<img class="note-img" src="' + n.image + '" alt="Ảnh ghi chú" loading="lazy">';
-      if (content) html += '<div class="note-content' + (longContent ? ' faded' : '') + '">' + content + '</div>';
-      html += '<div class="note-date">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                  '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' +
-                '</svg>' +
-                'Cập nhật: ' + formatDate(n.updatedAt || n.createdAt || Date.now()) +
-              '</div>';
-      html += '<div class="note-actions">' +
-                '<button class="btn-edit" data-action="edit" data-id="' + escapeHtml(n.id) + '">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>' +
-                  '</svg>Sửa</button>' +
-                '<button class="btn-delete" data-action="delete" data-id="' + escapeHtml(n.id) + '">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<polyline points="3 6 5 6 21 6"/>' +
-                    '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' +
-                  '</svg>Xóa</button>' +
-              '</div>';
-      html += '</article>';
-    }
-    els.notesList.innerHTML = html;
-  }
+    function formatDate(date) {
 
-  function openEditor(note) {
-    editingId = note ? note.id : null;
-    currentImageData = note && note.image ? note.image : null;
-    els.editorTitle.textContent = note ? 'Chỉnh sửa ghi chú' : 'Ghi chú mới';
-    els.noteTitle.value = note ? (note.title || '') : '';
-    els.noteContent.value = note ? (note.content || '') : '';
-    els.imgInput.value = '';
-    if (currentImageData) {
-      els.imgPreview.src = currentImageData;
-      els.imgPreviewWrap.classList.add('active');
-      els.imgLabel.textContent = 'Ảnh hiện tại';
-    } else {
-      els.imgPreview.removeAttribute('src');
-      els.imgPreviewWrap.classList.remove('active');
-      els.imgLabel.textContent = 'Xem trước ảnh';
-    }
-    els.editorOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    setTimeout(function () { if (!note) els.noteTitle.focus(); }, 250);
-  }
-
-  function closeEditor() {
-    els.editorOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-    editingId = null;
-    currentImageData = null;
-    els.imgInput.value = '';
-    els.imgPreview.removeAttribute('src');
-    els.imgPreviewWrap.classList.remove('active');
-  }
-
-  function handleSave() {
-    var title = els.noteTitle.value.trim();
-    var content = els.noteContent.value.trim();
-    if (!title && !content && !currentImageData) {
-      showToast('Hãy nhập tiêu đề, nội dung hoặc thêm ảnh.');
-      return;
-    }
-    var now = Date.now();
-    var isEdit = !!editingId;
-
-    if (isEdit) {
-      for (var i = 0; i < notes.length; i++) {
-        if (notes[i].id === editingId) {
-          notes[i].title = title;
-          notes[i].content = content;
-          notes[i].image = currentImageData;
-          notes[i].updatedAt = now;
-          break;
+      return new Intl.DateTimeFormat(
+        "vi-VN",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
         }
+      ).format(
+        new Date(date)
+      );
+    }
+
+
+    function showToast(message) {
+
+      toast.textContent =
+        message;
+
+      toast.classList.add(
+        "show"
+      );
+
+      clearTimeout(
+        showToast.timer
+      );
+
+      showToast.timer =
+        setTimeout(() => {
+
+          toast.classList.remove(
+            "show"
+          );
+
+        }, 2200);
+    }
+
+
+    /* ================= STORAGE ================= */
+
+    function loadNotes() {
+
+      try {
+
+        const raw =
+          localStorage.getItem(
+            STORAGE_KEY
+          );
+
+        if (!raw) {
+          return [];
+        }
+
+        const parsed =
+          JSON.parse(raw);
+
+        return Array.isArray(parsed)
+          ? parsed
+          : [];
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+        return [];
       }
-    } else {
-      notes.push({
-        id: uid(), title: title, content: content,
-        image: currentImageData, createdAt: now, updatedAt: now
-      });
     }
 
-    if (saveNotes()) {
-      closeEditor();
-      render();
-      showToast(isEdit ? 'Đã cập nhật ghi chú' : 'Đã lưu ghi chú');
-    } else if (!isEdit) {
-      notes.pop();
-    }
-  }
 
-  function handleImageSelect(e) {
-    var file = e.target.files && e.target.files[0];
-    if (!file) return;
-    if (!file.type || file.type.indexOf('image/') !== 0) {
-      showToast('Vui lòng chọn file hình ảnh.');
-      els.imgInput.value = '';
-      return;
-    }
-    var reader = new FileReader();
-    reader.onload = function (ev) {
-      var img = new Image();
-      img.onload = function () {
-        var MAX = 1400, w = img.width, h = img.height;
-        if (w > MAX || h > MAX) {
-          var r = Math.min(MAX / w, MAX / h);
-          w = Math.round(w * r); h = Math.round(h * r);
-        }
-        var canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var dataUrl;
-        try { dataUrl = canvas.toDataURL('image/jpeg', 0.82); }
-        catch (err) { dataUrl = ev.target.result; }
-        if (dataUrl.length > 1800000) {
-          try { dataUrl = canvas.toDataURL('image/jpeg', 0.6); } catch (e2) {}
-        }
-        currentImageData = dataUrl;
-        els.imgPreview.src = dataUrl;
-        els.imgPreviewWrap.classList.add('active');
-        els.imgLabel.textContent = 'Xem trước ảnh mới';
-      };
-      img.onerror = function () { showToast('Không đọc được ảnh này.'); };
-      img.src = ev.target.result;
-    };
-    reader.onerror = function () { showToast('Không đọc được file.'); };
-    reader.readAsDataURL(file);
-  }
+    function saveNotes() {
 
-  function handleImageClear() {
-    currentImageData = null;
-    els.imgInput.value = '';
-    els.imgPreview.removeAttribute('src');
-    els.imgPreviewWrap.classList.remove('active
+      try {
+
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(notes)
+        );
+
+        return true;
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+        showToast(
+          "Bộ nhớ trình duyệt đã đầy."
+        );
+
+        return false;
+      }
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function getFilteredNotes() {
+
+      const keyword =
+        searchInp

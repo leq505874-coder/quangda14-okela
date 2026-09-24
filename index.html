@@ -363,4 +363,140 @@
 
       html += '<article class="note-card" data-id="' + escapeHtml(n.id) + '">';
       html += '<div class="note-head">';
-      html += title ? '<h3 
+      html += title ? '<h3 class="note-title">' + title + '</h3>'
+                    : '<h3 class="note-title empty">(Không có tiêu đề)</h3>';
+      html += '</div>';
+      if (n.image) html += '<img class="note-img" src="' + n.image + '" alt="Ảnh ghi chú" loading="lazy">';
+      if (content) html += '<div class="note-content' + (longContent ? ' faded' : '') + '">' + content + '</div>';
+      html += '<div class="note-date">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                  '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' +
+                '</svg>' +
+                'Cập nhật: ' + formatDate(n.updatedAt || n.createdAt || Date.now()) +
+              '</div>';
+      html += '<div class="note-actions">' +
+                '<button class="btn-edit" data-action="edit" data-id="' + escapeHtml(n.id) + '">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>' +
+                  '</svg>Sửa</button>' +
+                '<button class="btn-delete" data-action="delete" data-id="' + escapeHtml(n.id) + '">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<polyline points="3 6 5 6 21 6"/>' +
+                    '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' +
+                  '</svg>Xóa</button>' +
+              '</div>';
+      html += '</article>';
+    }
+    els.notesList.innerHTML = html;
+  }
+
+  function openEditor(note) {
+    editingId = note ? note.id : null;
+    currentImageData = note && note.image ? note.image : null;
+    els.editorTitle.textContent = note ? 'Chỉnh sửa ghi chú' : 'Ghi chú mới';
+    els.noteTitle.value = note ? (note.title || '') : '';
+    els.noteContent.value = note ? (note.content || '') : '';
+    els.imgInput.value = '';
+    if (currentImageData) {
+      els.imgPreview.src = currentImageData;
+      els.imgPreviewWrap.classList.add('active');
+      els.imgLabel.textContent = 'Ảnh hiện tại';
+    } else {
+      els.imgPreview.removeAttribute('src');
+      els.imgPreviewWrap.classList.remove('active');
+      els.imgLabel.textContent = 'Xem trước ảnh';
+    }
+    els.editorOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () { if (!note) els.noteTitle.focus(); }, 250);
+  }
+
+  function closeEditor() {
+    els.editorOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    editingId = null;
+    currentImageData = null;
+    els.imgInput.value = '';
+    els.imgPreview.removeAttribute('src');
+    els.imgPreviewWrap.classList.remove('active');
+  }
+
+  function handleSave() {
+    var title = els.noteTitle.value.trim();
+    var content = els.noteContent.value.trim();
+    if (!title && !content && !currentImageData) {
+      showToast('Hãy nhập tiêu đề, nội dung hoặc thêm ảnh.');
+      return;
+    }
+    var now = Date.now();
+    var isEdit = !!editingId;
+
+    if (isEdit) {
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].id === editingId) {
+          notes[i].title = title;
+          notes[i].content = content;
+          notes[i].image = currentImageData;
+          notes[i].updatedAt = now;
+          break;
+        }
+      }
+    } else {
+      notes.push({
+        id: uid(), title: title, content: content,
+        image: currentImageData, createdAt: now, updatedAt: now
+      });
+    }
+
+    if (saveNotes()) {
+      closeEditor();
+      render();
+      showToast(isEdit ? 'Đã cập nhật ghi chú' : 'Đã lưu ghi chú');
+    } else if (!isEdit) {
+      notes.pop();
+    }
+  }
+
+  function handleImageSelect(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type || file.type.indexOf('image/') !== 0) {
+      showToast('Vui lòng chọn file hình ảnh.');
+      els.imgInput.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var img = new Image();
+      img.onload = function () {
+        var MAX = 1400, w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          var r = Math.min(MAX / w, MAX / h);
+          w = Math.round(w * r); h = Math.round(h * r);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var dataUrl;
+        try { dataUrl = canvas.toDataURL('image/jpeg', 0.82); }
+        catch (err) { dataUrl = ev.target.result; }
+        if (dataUrl.length > 1800000) {
+          try { dataUrl = canvas.toDataURL('image/jpeg', 0.6); } catch (e2) {}
+        }
+        currentImageData = dataUrl;
+        els.imgPreview.src = dataUrl;
+        els.imgPreviewWrap.classList.add('active');
+        els.imgLabel.textContent = 'Xem trước ảnh mới';
+      };
+      img.onerror = function () { showToast('Không đọc được ảnh này.'); };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function () { showToast('Không đọc được file.'); };
+    reader.readAsDataURL(file);
+  }
+
+  function handleImageClear() {
+    currentImageData = null;
+    els.imgInput.value = '';
+    els.imgPreview.removeAttribute('src');
+    els.imgPreviewWrap.classList.remove('active

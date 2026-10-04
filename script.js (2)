@@ -1,0 +1,182 @@
+// ============ DỮ LIỆU ============
+var SECTIONS=[
+  {k:'home',name:'🏠 Home',intro:'Chào mừng đến Quangda14 Hub.',seed:[]},
+  {k:'limbo',name:'📖 Limbo',intro:'Lore, level và truyền thuyết về Limbo.',seed:[
+    {t:'Level M',b:'Một level rất sáng, sương mù phủ kín, nằm cạnh một nhà máy điện hạt nhân. Mọi người trong nhà máy đều là thực thể hình người, bị đột biến vì phóng xạ.\n\nSau vài giờ ở đây, mưa axit sẽ rơi. Cứ 7 ngày, một chiếc máy bay bay qua và thả xuống thùng cứu trợ hoặc một quả bom hạt nhân. Thùng chỉ chứa đủ đồ ăn cho một người trong 6 ngày, nên người lang thang phải tranh nhau.'},
+    {t:'Level 777: Sòng bạc máu',b:'Một level riêng biệt, nhưng Limbo là cái nôi của nó. Người lang thang vào đây bằng cách noclip. Cứ 7 ngày, trò chơi trong sòng bạc được đặt lại và chọn ngẫu nhiên một trò mới.'}
+  ]},
+  {k:'tech',name:'💻 Tech',intro:'Mẹo code, tool, lỗi đã gặp và cách sửa.',seed:[
+    {t:'Ý tưởng đầu tiên',b:'Ghi lại lệnh, đoạn code hoặc link hay ở đây.'},
+    {t:'Hệ sinh thái công nghệ',b:'Điện thoại → Chip → Software → Concept. Ghi chú từng mảng.'}
+  ]},
+  {k:'notes',name:'📝 Notes',intro:'Ghi nhanh, việc cần làm, nháp.',seed:[
+    {t:'Việc cần làm',b:'- Viết thêm chương cho Level M\n- Thử code một tính năng mới\n- Học Firebase để nâng cấp web'}
+  ]},
+  {k:'links',name:'🔗 Links',intro:'Lưu link quan trọng, có tên và mô tả.',seed:[
+    {t:'GitHub của tui',b:'https://github.com/leq505874-coder'}
+  ]},
+  {k:'gopY',name:'💬 Góp ý',intro:'Bạn có thể để lại góp ý ở đây. Góp ý lưu trên máy bạn, chỉ bạn thấy.',seed:[]}
+];
+var cur='home',data={};
+
+function load(s){
+  try{var r=localStorage.getItem('hub:'+s.k);if(r)return JSON.parse(r)}catch(e){}
+  return s.seed.map(function(x){return{t:x.t,b:x.b,d:'mẫu'}});
+}
+function save(k){try{localStorage.setItem('hub:'+k,JSON.stringify(data[k]))}catch(e){}}
+
+SECTIONS.forEach(function(s){data[s.k]=load(s)});
+
+// ============ HELPERS ============
+function el(t,p,c){var e=document.createElement(t);for(var a in p)e[a]=p[a];(c||[]).forEach(function(x){e.appendChild(typeof x==='string'?document.createTextNode(x):x)});return e}
+
+// ============ THEME ============
+var themeBtn=document.getElementById('themeBtn');
+function applyTheme(t){
+  if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
+  else if(t==='light')document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  themeBtn.textContent=(t==='dark')?'☀️':(t==='light')?'🌙':'🌗';
+}
+var savedTheme=localStorage.getItem('hub:theme')||'auto';
+applyTheme(savedTheme);
+themeBtn.onclick=function(){
+  var order=['light','dark','auto'];
+  var next=order[(order.indexOf(savedTheme)+1)%3];
+  savedTheme=next;
+  localStorage.setItem('hub:theme',next);
+  applyTheme(next);
+};
+
+// ============ TABS ============
+function renderTabs(){
+  var box=document.getElementById('tabs');box.innerHTML='';
+  SECTIONS.forEach(function(s){
+    var b=el('button',{type:'button',textContent:s.name});
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',s.k===cur);
+    b.onclick=function(){cur=s.k;render();window.scrollTo({top:0,behavior:'smooth'})};
+    box.appendChild(b);
+  });
+}
+
+// ============ LINK TAB ============
+function renderLinksTab(m){
+  data.links.forEach(function(it,i){
+    var url=it.b.trim();
+    if(!/^https?:\/\//i.test(url))url='https://'+url;
+    var item=el('div',{className:'link-item'});
+    var a=el('a',{href:url,target:'_blank',rel:'noopener noreferrer',textContent:it.t});
+    item.appendChild(a);
+    var sub=el('p',{textContent:url});
+    item.appendChild(sub);
+    var del=el('button',{type:'button',className:'del',textContent:'Xóa'});
+    del.style.marginTop='8px';
+    del.onclick=function(){data.links.splice(i,1);save('links');render()};
+    item.appendChild(del);
+    m.appendChild(item);
+  });
+  if(!data.links.length)m.appendChild(el('p',{className:'intro',textContent:'Chưa có link nào. Thêm bên dưới.'}));
+  var t=el('input',{placeholder:'Tên link',required:true,maxLength:100});
+  var u=el('input',{placeholder:'URL (https://...)',required:true});
+  var f=el('form',{},[t,u,el('button',{type:'submit',textContent:'Thêm link'})]);
+  f.onsubmit=function(e){
+    e.preventDefault();
+    var tv=t.value.trim(),uv=u.value.trim();
+    if(!tv||!uv)return;
+    data.links.unshift({t:tv,b:uv,d:new Date().toLocaleDateString('vi-VN')});
+    save('links');render();
+  };
+  m.appendChild(f);
+}
+
+// ============ GÓP Ý TAB ============
+function renderGopYTab(m){
+  data.gopY.forEach(function(it,i){
+    var del=el('button',{type:'button',className:'del',textContent:'Xóa góp ý này'});
+    del.onclick=function(){data.gopY.splice(i,1);save('gopY');render()};
+    m.appendChild(el('details',{},[
+      el('summary',{},[el('span',{textContent:it.t}),el('small',{textContent:it.d})]),
+      el('div',{className:'body',textContent:it.b}),
+      del
+    ]));
+  });
+  if(!data.gopY.length)m.appendChild(el('p',{className:'intro',textContent:'Chưa có góp ý nào. Góp ý đầu tiên bên dưới.'}));
+  var t=el('input',{placeholder:'Tên / Nickname',required:true,maxLength:60});
+  var tx=el('textarea',{placeholder:'Nội dung góp ý...',required:true,maxLength:1000});
+  var f=el('form',{},[t,tx,el('button',{type:'submit',textContent:'Gửi góp ý'})]);
+  f.onsubmit=function(e){
+    e.preventDefault();
+    var tv=t.value.trim(),bv=tx.value.trim();
+    if(!tv||!bv){alert('Vui lòng nhập đủ tên và nội dung');return}
+    data.gopY.unshift({t:tv,b:bv,d:new Date().toLocaleDateString('vi-VN')});
+    save('gopY');render();
+    alert('Đã lưu góp ý trên máy bạn 🎉');
+  };
+  m.appendChild(f);
+}
+
+// ============ HOME TAB ============
+function renderHomeTab(m){
+  m.appendChild(el('p',{className:'intro',textContent:'Chọn một khu bên dưới để bắt đầu.'}));
+  var cards=el('div',{className:'cards'});
+  SECTIONS.forEach(function(s){
+    if(s.k==='home')return;
+    var c=el('a',{href:'#',className:'card'});
+    c.onclick=function(e){e.preventDefault();cur=s.k;render();window.scrollTo({top:0,behavior:'smooth'})};
+    c.appendChild(el('h3',{textContent:s.name}));
+    c.appendChild(el('p',{textContent:s.intro}));
+    cards.appendChild(c);
+  });
+  m.appendChild(cards);
+}
+
+// ============ RENDER CHÍNH ============
+function render(){
+  renderTabs();
+  var s=SECTIONS.filter(function(x){return x.k===cur})[0];
+  var m=document.getElementById('main');
+  m.innerHTML='';
+  m.appendChild(el('p',{className:'intro',textContent:s.intro}));
+
+  if(cur==='home'){renderHomeTab(m);return}
+  if(cur==='links'){renderLinksTab(m);return}
+  if(cur==='gopY'){renderGopYTab(m);return}
+
+  data[cur].forEach(function(it,i){
+    var del=el('button',{type:'button',className:'del',textContent:'Xóa mục này'});
+    del.onclick=function(){data[cur].splice(i,1);save(cur);render()};
+    m.appendChild(el('details',{},[
+      el('summary',{},[el('span',{textContent:it.t}),el('small',{textContent:it.d})]),
+      el('div',{className:'body',textContent:it.b}),
+      del
+    ]));
+  });
+  if(!data[cur].length)m.appendChild(el('p',{className:'intro',textContent:'Chưa có mục nào. Thêm bên dưới.'}));
+
+  var ti=el('input',{placeholder:'Tiêu đề',required:true,maxLength:120});
+  var tx=el('textarea',{placeholder:'Nội dung'});
+  var f=el('form',{},[ti,tx,el('button',{type:'submit',textContent:'Thêm mục'})]);
+  f.onsubmit=function(e){
+    e.preventDefault();
+    var v=ti.value.trim();
+    if(!v)return;
+    data[cur].unshift({t:v,b:tx.value,d:new Date().toLocaleDateString('vi-VN')});
+    save(cur);render();
+  };
+  m.appendChild(f);
+}
+
+// ============ ABOUT ============
+document.getElementById('aboutLink').onclick=function(e){
+  e.preventDefault();
+  alert('GIỚI THIỆU QUANGDA14 HUB\n\n'+
+    '• Web cá nhân, không thu tiền, không quảng cáo.\n'+
+    '• Không thu thập dữ liệu cá nhân (email, SĐT, địa chỉ...).\n'+
+    '• Mọi dữ liệu bạn nhập lưu TRÊN MÁY BẠN bằng localStorage.\n'+
+    '• Không có server, không gửi dữ liệu đi đâu cả.\n'+
+    '• Bạn có thể xóa toàn bộ dữ liệu bằng cách xóa cache trình duyệt.\n\n'+
+    'Liên hệ: github.com/leq505874-coder');
+};
+
+render();

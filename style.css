@@ -122,3 +122,56 @@ footer { text-align: center; padding: 20px; background: var(--forest-dark); colo
   .cat { font-size: 2rem; }
   .fb-row { flex-direction: column; align-items: stretch; }
 }
+/* ===== MÈO TUYỆT CHỦNG ===== */
+.cat, .cat-speech, .grass, .grass-hud, .goku-burst-text, .goku-split-cat, .goku-flash { 
+  display: none !important; 
+  visibility: hidden !important; 
+  opacity: 0 !important; 
+  pointer-events: none !important;
+}
+
+/* ===== DARK MODE ===== */
+body { 
+  background: linear-gradient(135deg, #0d1f17 0%, #1a2e24 100%) !important; 
+  color: #e8f5e9 !important; 
+}
+header { background: #000000 !important; }
+.logo { color: #52b788 !important; }
+.nav-btn { color: #b7e4c7 !important; }
+.nav-btn.active { background: #52b788 !important; color: #000 !important; }
+main { color: #e8f5e9; }
+.editor, .garden, .feedback { 
+  background: #14251d !important; 
+  color: #e8f5e9 !important;
+  border-color: #2d6a4f !important;
+}
+.editor h2, .garden-header h2, .feedback h2, .feedback-list h3 { color: #52b788 !important; }
+.editor input, .editor textarea, .editor select,
+#feedbackForm input, #feedbackForm textarea, #search, .mood-picker select {
+  background: #0d1f17 !important; 
+  color: #e8f5e9 !important; 
+  border-color: #2d6a4f !important;
+}
+.editor input::placeholder, .editor textarea::placeholder,
+#feedbackForm input::placeholder, #feedbackForm textarea::placeholder {
+  color: #7a8b80 !important;
+}
+.note { 
+  background: #14251d !important; 
+  color: #e8f5e9 !important; 
+}
+.note-title { color: #52b788 !important; }
+.note-content { color: #c8d6ce !important; }
+.note-tag { background: #2d6a4f !important; color: #b7e4c7 !important; }
+.note-footer { color: #7a8b80 !important; border-color: #2d6a4f !important; }
+#count { background: #2d6a4f !important; color: #b7e4c7 !important; }
+.garden { background: linear-gradient(180deg, #0d1f17, #14251d) !important; }
+.garden-grid { background: rgba(20, 37, 29, 0.6) !important; border-color: #2d6a4f !important; }
+.garden-stats span { background: #0d1f17 !important; color: #52b788 !important; }
+.tree-label { background: rgba(13, 31, 23, 0.9) !important; color: #b7e4c7 !important; }
+.fb-item { background: #0d1f17 !important; }
+.fb-name { color: #52b788 !important; }
+.fb-message { color: #c8d6ce !important; }
+.feedback-sub { color: #7a8b80 !important; }
+.empty { color: #52b788 !important; }
+footer { background: #000000 !important; color: #52b788 !important; }
